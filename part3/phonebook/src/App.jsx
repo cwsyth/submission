@@ -65,20 +65,24 @@ const App = () => {
     }
     else {
       if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
-        let updatePerson = persons.find((person) => {
+        const existingPerson = persons.find((person) => {
           return person.name === newName;
         });
-        updatePerson.number = newNumber;
+
+        const updatePerson = {
+          ...existingPerson,
+          number: newNumber
+        };
 
         personService.update(updatePerson)
-          .then((returnedPerson) => {
+          .then((oldPerson) => {
             const newPersons = persons.filter((person) => {
-              return person.id !== returnedPerson.id;
-            }).concat(returnedPerson);
+              return person.id !== oldPerson.id;
+            }).concat(updatePerson);
 
             setPersons(newPersons);
 
-            setMsg(`Changed number of ${returnedPerson.name}`);
+            setMsg(`Changed number of ${updatePerson.name}`);
             setTimeout(() => {
               setMsg(null);
             }, 2000);
@@ -87,8 +91,6 @@ const App = () => {
             console.log(err);
             alert(`${updatePerson.name} does not exist`);
           });
-        
-        console.log(updatePerson);
       }
     }
 

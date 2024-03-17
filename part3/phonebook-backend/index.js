@@ -12,7 +12,7 @@ morgan.token('body', (req) => {
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
 
-app.get('/info', (req, res) => {
+app.get('/info', (req, res, next) => {
     Person.countDocuments({})
         .then((result) => {
             if(result) {
@@ -23,12 +23,10 @@ app.get('/info', (req, res) => {
                 res.status(404).end();
             }
         })
-        .catch((err) => {
-            res.status(500).end();
-        });
+        .catch((err) => next(err));
 })
 
-app.get('/api/persons', (req, res) => {
+app.get('/api/persons', (req, res, next) => {
     Person.find({})
         .then((result) => {
             if(result) {
@@ -38,13 +36,10 @@ app.get('/api/persons', (req, res) => {
                 res.status(404).end();
             }
         })
-        .catch((err) => {
-            console.log(err);
-            res.status(500).end();
-        });
+        .catch((err) => next(err));
 })
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
     Person.findById(req.params.id)
         .then((person) => {
             if(person) {
@@ -54,14 +49,11 @@ app.get('/api/persons/:id', (req, res) => {
                 res.status(404).end();
             }
         })
-        .catch((err) => {
-            console.log(err);
-            res.status(404).end();
-        });
+        .catch((err) => next(err));
 })
 
-app.delete('/api/persons/:id', (req, res) => {
-    Person.deleteOne({_id: req.params.id})
+app.delete('/api/persons/:id', (req, res, next) => {
+    Person.findByIdAndDelete(req.params.id)
         .then((result) => {
             if(result.acknowledged) {
                 res.status(204).end();
@@ -70,38 +62,57 @@ app.delete('/api/persons/:id', (req, res) => {
                 res.status(404).end();
             }
         })
-        .catch((err) => {
-            console.log(err);
-            res.status(500).end();
-        });
+        .catch((err) => next(err));
 })
 
-app.post('/api/persons', async (req, res) => {
+app.post('/api/persons', (req, res, next) => {
     const body = req.body;
 
     if(!body.name || !body.number) {
         res.status(400).json({ err: 'wrong request body' });
     }
     else {
-        try {
-            const person = await Person.findOne({name: body.name});
-
-            if(person) {
-                res.status(409).json({ err: 'name must be unique' });
-            }
-            else {
-                const newPerson = new Person(body);
-
-                const result = await newPerson.save();
+        const newPerson = new Person(body);
+        newPerson.save()
+            .then((result) => {
                 res.json(result);
-            }
-        }
-        catch(err) {
-            console.log(err);
-            res.status(500).end();
-        }
+            })
+            .catch((err) => next(err));
     }
 })
+
+app.put('/api/persons/:id', (req, res, next) => {
+    const body = req.body;
+
+    if(!body.name || !body.number) {
+        res.status(400).json({ err: 'wrong request body' });
+    }
+    else {
+        Person.findByIdAndUpdate(req.params.id, body)
+            .then((result) => {
+                if(result) {
+                    res.json(result);
+                }
+                else {
+                    res.status(404).end();
+                }
+            })
+            .catch((err) => next(err));
+    }
+})
+
+const errorHandler = (err, req, res, next) => {
+    console.log(err);
+
+    if (err.name === 'CastError') {
+        return res.status(400).send({ error: 'wrong id format' });
+    }
+    else {
+        return res.status(500).end();
+    }
+}
+
+app.use(errorHandler);
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
