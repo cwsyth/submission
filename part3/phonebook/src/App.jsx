@@ -36,6 +36,12 @@ const App = () => {
     setShowAll(false);
   }
 
+  function removeMsg() {
+    setTimeout(() => {
+      setMsg(null);
+    }, 3000);
+  }
+
   const addNewPerson = (e) => {
     e.preventDefault();
 
@@ -50,17 +56,20 @@ const App = () => {
       };
 
       personService.create(newPerson)
-        .then((returnedPerson) => {
-          setPersons(persons.concat(returnedPerson));
+        .then((createdPerson) => {
+          setPersons(persons.concat(createdPerson));
 
-          setMsg(`Added ${returnedPerson.name}`);
-          setTimeout(() => {
-            setMsg(null);
-          }, 2000);
+          setMsg(`Added ${createdPerson.name}`);
         })
         .catch((err) => {
           console.log(err);
-          alert('person could not be added');
+          
+          if(err.response) {
+            setMsg(err.response.data.error);
+          }
+          else {
+            alert('person could not be added');
+          }
         });
     }
     else {
@@ -83,15 +92,20 @@ const App = () => {
             setPersons(newPersons);
 
             setMsg(`Changed number of ${updatePerson.name}`);
-            setTimeout(() => {
-              setMsg(null);
-            }, 2000);
           })
           .catch((err) => {
             console.log(err);
-            alert(`${updatePerson.name} does not exist`);
+
+            if(err.response) {
+              setMsg(err.response.data.error);
+            }
+            else {
+              alert(`${updatePerson.name} does not exist`);
+            }
           });
       }
+
+      removeMsg();
     }
 
     setNewName('');
