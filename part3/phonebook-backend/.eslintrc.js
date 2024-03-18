@@ -1,7 +1,7 @@
 module.exports = {
     'env': {
         'browser': false,
-		'node': true,
+        'node': true,
         'commonjs': true,
         'es2021': true
     },
@@ -25,7 +25,7 @@ module.exports = {
     'rules': {
         'indent': [
             'error',
-            'tabs'
+            4
         ],
         'linebreak-style': [
             'error',
