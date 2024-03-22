@@ -108,6 +108,27 @@ test('delete blog by id', async () => {
     assert.strictEqual(blogs.length, helper.initialBlogs.length - 1);
 });
 
+test('update blog title by id', async () => {
+    const blog = {
+        title: 'Blog Post2 Update',
+        author: 'Steven',
+        url: '/post2'
+    };
+
+    const blogToUpdate = (await helper.getBlogs())[0];
+
+    await api
+        .put(`/api/blogs/${blogToUpdate.id}`)
+        .send(blog)
+        .expect(200)
+        .expect('Content-Type', /application\/json/);
+    
+    const blogs = await helper.getBlogs();
+    const updatedBlog = blogs.find((blog) => blog.id === blogToUpdate.id);
+    
+    assert.strictEqual(updatedBlog.title, blog.title);
+});
+
 after(async () => {
     mongoose.connection.close();
 });
