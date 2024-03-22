@@ -102,7 +102,7 @@ app.put('/api/persons/:id', (req, res, next) => {
         .catch((err) => next(err));
 });
 
-const errorHandler = (err, req, res) => {
+const errorHandler = (err, req, res, next) => {
     console.log(err);
 
     if(err.name === 'CastError') {
@@ -111,9 +111,8 @@ const errorHandler = (err, req, res) => {
     else if(err.name === 'ValidationError') {
         return res.status(400).json({ error: err.message });
     }
-    else {
-        return res.status(500).end();
-    }
+    
+    next(err);
 };
 
 app.use(errorHandler);
