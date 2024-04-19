@@ -21,8 +21,8 @@ blogsRouter.post('/', async (req, res, next) => {
     const blog = new Blog(req.body);
 
     try {
-        const result = await blog.save();
-        res.status(201).json(result);
+        const savedBlog = await blog.save();
+        res.status(201).json(savedBlog);
     }
     catch(err) { 
         next(err); 
@@ -31,10 +31,10 @@ blogsRouter.post('/', async (req, res, next) => {
 
 blogsRouter.put('/:id', async (req, res, next) => {
     try {
-        const result = await Blog.findByIdAndUpdate(req.params.id, req.body, { runValidators: true });
+        const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body, { runValidators: true });
 
-        if(result) {
-            res.json(result);
+        if(updatedBlog) {
+            res.json(updatedBlog);
         }
         else {
             res.status(404).end();
