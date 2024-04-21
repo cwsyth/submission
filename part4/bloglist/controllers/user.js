@@ -20,17 +20,24 @@ userRouter.get('/', async (req, res, next) => {
 });
 
 userRouter.post('/', async (req, res, next) => {
-    const { password } = req.body;
-
-    const saltRounds = 10;
-    const passwordHash = await bcrypt.hash(password, saltRounds);
-
-    const newUser = new User({
-        ...req.body,
-        passwordHash
-    });
-
     try {
+        const { password } = req.body;
+
+        if(password.length < 8) {
+            throw {
+                name: 'ValidationError',
+                message: 'password must be at least 8 characters long'
+            };
+        }
+
+        const saltRounds = 10;
+        const passwordHash = await bcrypt.hash(password, saltRounds);
+
+        const newUser = new User({
+            ...req.body,
+            passwordHash
+        });
+
         const savedUser = await newUser.save();
         res.status(201).json(savedUser);
     }
