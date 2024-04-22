@@ -1,4 +1,5 @@
 const { test, beforeEach, after } = require('node:test');
+const assert = require('node:assert');
 const mongoose = require('mongoose');
 const helper = require('./test_helper');
 const bcrypt = require('bcrypt');
@@ -23,6 +24,8 @@ beforeEach(async () => {
 });
 
 test('invalid user will throw a validation error', async () => {
+    const usersAtStart = await helper.getUsers();
+
     const user1 = {
         username: 'root2',
         name: 'root2',
@@ -34,7 +37,19 @@ test('invalid user will throw a validation error', async () => {
         .send(user1)
         .expect(400);
 
-    console.log(await helper.getUsers());
+    const user2 = {
+        name: 'root2',
+        password: 'password'
+    };
+
+    await api
+        .post('/api/users')
+        .send(user2)
+        .expect(400);
+
+    const usersAtEnd = await helper.getUsers();
+
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length);
 });
 
 after(async () => {
