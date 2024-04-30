@@ -20,4 +20,20 @@ const errorHandler = (err, req, res, next) => {
     next(err);
 };
 
-module.exports = { errorHandler };
+const tokenExtractor = (req, res, next) => {
+    const authHeader = req.get('authorization');
+
+    if(authHeader && authHeader.startsWith('Bearer ')) {
+        req.token = authHeader.replace('Bearer ', '');
+    }
+    else {
+        req.token = null;
+    }
+
+    next();
+};
+
+module.exports = {
+    errorHandler,
+    tokenExtractor
+};
