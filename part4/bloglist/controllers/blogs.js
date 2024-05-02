@@ -63,13 +63,25 @@ blogsRouter.put('/:id', async (req, res, next) => {
 
 blogsRouter.delete('/:id', async (req, res, next) => {
     try {
-        const result = await Blog.findByIdAndDelete(req.params.id);
+        const decodedToken = jwt.verify(req.token, process.env.JWT_SECRET);
+        const user = await User.findById(decodedToken.id);
 
-        if(result) {
-            return res.status(204).end();
+        const userHasBlog = user.blogs.some((id) => {
+            id === req.params.id;
+        });
+        
+        if(userHasBlog) {
+            const result = await Blog.findByIdAndDelete(req.params.id);
+
+            if(result) {
+                return res.status(204).end();
+            }
+            else {
+                return res.status(404).end();
+            }
         }
         else {
-            return res.status(404).end();
+            res.status(401).end();
         }
     }
     catch(err) {
