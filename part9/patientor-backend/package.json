@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
+    "dev": "ts-node-dev index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint --ext .ts .",
     "tsc": "tsc"
   },
   "author": "",
@@ -14,6 +16,7 @@
     "@typescript-eslint/eslint-plugin": "^7.8.0",
     "@typescript-eslint/parser": "^7.8.0",
     "eslint": "^8.57.0",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.4.5"
   },
   "dependencies": {
