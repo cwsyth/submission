@@ -9,7 +9,10 @@ interface Patient {
 
 type NonSensitivePatient = Omit<Patient, 'ssn'>;
 
+type NewPatient = Omit<Patient, 'id'>;
+
 export { 
     Patient,
-    NonSensitivePatient
+    NonSensitivePatient,
+    NewPatient
 };
