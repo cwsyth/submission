@@ -1,4 +1,4 @@
-import Diagnose from "./Diagnose";
+import Diagnosis from "./Diagnosis";
 
 enum Gender {
     Male = 'male',
@@ -11,7 +11,7 @@ interface BaseEntry {
     description: string;
     date: string;
     specialist: string;
-    diagnosisCodes?: Array<Diagnose['code']>;
+    diagnosisCodes?: Array<Diagnosis['code']>;
 }
 
 interface HospitalEntry extends BaseEntry {

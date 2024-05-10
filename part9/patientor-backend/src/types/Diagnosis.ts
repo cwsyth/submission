@@ -1,7 +1,7 @@
-interface Diagnose {
+interface Diagnosis {
     code: string;
     name: string;
     latin?: string;
 }
 
-export default Diagnose;
+export default Diagnosis;
