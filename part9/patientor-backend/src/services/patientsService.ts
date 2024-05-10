@@ -13,6 +13,7 @@ const getNonSensitiveData = (): NonSensitivePatient[] => {
         };
     });
 };
+
 const addPatient = (patient: NewPatient) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const id: string = uuid();
