@@ -1,4 +1,4 @@
-import { NewPatient } from "../types/Patient";
+import { Gender, NewPatient } from "../types/Patient";
 import DataError from "../types/DataError";
 
 const isString = (obj: unknown): obj is string => {
@@ -8,6 +8,23 @@ const isString = (obj: unknown): obj is string => {
 const parseString = (obj: unknown): string => {
     if(!obj || !isString(obj)) {
         throw new DataError('Incorrect or missing datafield: ' + obj);
+    }
+
+    return obj;
+};
+
+
+const isGender = (obj: string): obj is Gender => {
+    const genders = Object.values(Gender).map(gender => {
+        return gender.toString();
+    });
+
+    return genders.includes(obj);
+};
+
+const parseGender = (obj: unknown): Gender => {
+    if(!obj || !isString(obj) || !isGender(obj)){
+        throw new DataError('Incorrect or missing gender: ' + obj);
     }
 
     return obj;
@@ -26,7 +43,7 @@ const toNewPatient = (object: unknown): NewPatient => {
         name: parseString(object.name),
         dateOfBirth: parseString(object.dateOfBirth),
         ssn: parseString(object.ssn),
-        gender: parseString(object.gender),
+        gender: parseGender(object.gender),
         occupation: parseString(object.occupation)
     };
 
