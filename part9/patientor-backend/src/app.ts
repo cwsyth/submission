@@ -1,4 +1,5 @@
 import express from 'express';
+import middleware from './utils/middleware';
 import diagnosesRouter from './routes/diagnosesRouter';
 import patientsRouter from './routes/patientRouter';
 
@@ -12,5 +13,7 @@ app.get('/ping', (_req, res) => {
 
 app.use('/api/diagnoses', diagnosesRouter);
 app.use('/api/patients', patientsRouter);
+
+app.use(middleware.errorHandler);
 
 export default app;

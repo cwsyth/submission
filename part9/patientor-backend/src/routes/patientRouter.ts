@@ -8,11 +8,15 @@ router.get('/', (_req, res) => {
     res.send(patientService.getNonSensitiveData());
 });
 
-router.post('/', (req, res) => {
-    const newPatient = toNewPatient(req.body);
-    const addedPatient = patientService.addPatient(newPatient);
-
-    res.send(addedPatient);
+router.post('/', (req, res, next) => {
+    try {
+        const newPatient = toNewPatient(req.body);
+        const addedPatient = patientService.addPatient(newPatient);
+        res.send(addedPatient);
+    }
+    catch(err) {
+        next(err);
+    }
 });
 
 
