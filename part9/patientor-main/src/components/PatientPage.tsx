@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { Entry, Patient } from "../types";
+import { Diagnosis, Entry, Patient } from "../types";
 
 import patientService from '../services/patients';
+import diagnosesService from '../services/diagnoses';
 
 import { Typography } from '@mui/material';
 
 const PatientPage = () => {
     const [patient, setPatient] = useState<Patient | null>(null);
+    const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
     const { id } = useParams();
 
     useEffect(() => {
@@ -21,6 +23,15 @@ const PatientPage = () => {
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        const fetchDiagnoses = async () => {
+            const diagnoses = await diagnosesService.getAll();
+            setDiagnoses(diagnoses);
+        };
+        fetchDiagnoses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [patient]);
 
     return (
         <div>
@@ -49,7 +60,11 @@ const PatientPage = () => {
                                                 {
                                                     entry.diagnosisCodes?.map((code) => (
                                                         <li key={code}>
-                                                            {code}
+                                                            {code} {(
+                                                                 diagnoses.find(diagnosis => {
+                                                                    return diagnosis.code === code;
+                                                                })?.name
+                                                            )}
                                                         </li>
                                                     ))
                                                 }
